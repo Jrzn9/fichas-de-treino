@@ -40,3 +40,50 @@ class ExercicioUpdate(BaseModel):
     nome: str | None = None
     grupo_muscular: str | None = None
     sinergistas: list[str] | None = None
+
+
+
+class FichaTreinoCreate(BaseModel):
+    nome: str
+
+
+class FichaTreinoResponse(BaseModel):
+    id: int
+    nome: str
+    
+    class Config:
+        from_attributes=True
+
+class FichaTreinoUpdate(BaseModel):
+    nome: str | None = None
+
+
+
+class FichaExercicioCreate(BaseModel):
+    exercicio_id: int
+    tecnica_id: int | None = None
+    series: int
+    repeticoes: int
+    carga: float | None = None
+    ordem: int
+
+class FichaExercicioResponse(BaseModel):
+    id: int
+    exercicio_id: int
+    tecnica_id: int | None
+    series: int
+    repeticoes: int
+    carga: float | None
+    ordem: int
+
+    class Config:
+        from_attributes = True
+
+
+class FichaExercicioUpdate(BaseModel):
+    tecnica_id: int | None = None
+    series: int | None = None
+    repeticoes: int | None = None
+    carga: float | None = None
+    ordem: int | None = None
+    

@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Boolean, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 from app.database import Base
+
 
 class Usuario (Base):
     __tablename__ = "usuarios"
@@ -10,6 +11,7 @@ class Usuario (Base):
     nome = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
     senha_hash = Column(String, nullable=False)
+    is_admin = Column(Boolean, default=False)
     criado_em = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     fichas_treino=relationship("FichaTreino", back_populates="usuario")
@@ -53,10 +55,22 @@ class FichaExercicio (Base):
     repeticoes = Column(Integer, nullable=False)
     carga = Column(Float, nullable=True)
     ordem = Column(Integer, nullable=False)
+    tecnica_id = Column(Integer, ForeignKey("tecnicas.id"), nullable=True)
 
     ficha = relationship("FichaTreino", back_populates="ficha_exercicios")
     exercicio = relationship("Exercicio", back_populates="ficha_exercicios")
+    tecnica = relationship("Tecnica", back_populates="ficha_exercicios")
 
+
+class Tecnica(Base):
+    __tablename__ = "tecnicas"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nome = Column(String, nullable=False)
+    descricao = Column(Text, nullable=False)
+    exemplo = Column(Text, nullable=True)
+
+    ficha_exercicios = relationship("FichaExercicio", back_populates="tecnica")
 
 
 

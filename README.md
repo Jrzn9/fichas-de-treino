@@ -8,6 +8,8 @@ API REST para gerenciamento de fichas de treino, construída com FastAPI e Postg
 
 Essa API permite que usuários se cadastrem, façam login e montem suas próprias fichas de treino a partir de um catálogo de exercícios — cada exercício já vem com seu grupo muscular principal e os músculos sinergistas associados, sem que o usuário final precise ter conhecimento de anatomia ou biomecânica para montar um treino completo.
 
+O projeto nasce da observação de que muitas pessoas treinam de forma ineficiente — não necessariamente errada — e que exercícios fundamentais, bem executados e aplicados com consistência, são mais seguros e eficazes a longo prazo do que variações de efeito duvidoso. Por isso, o catálogo de exercícios é curado, priorizando movimentos com respaldo científico.
+
 ## Tecnologias utilizadas
 
 - **FastAPI** — framework web para construção da API
@@ -22,31 +24,37 @@ Essa API permite que usuários se cadastrem, façam login e montem suas própria
 
 - ✅ Cadastro de usuário, com senha protegida por hash bcrypt
 - ✅ Login com geração de token JWT (expiração de 1h)
-- ✅ Rotas protegidas por autenticação
-- ✅ CRUD de exercícios (criar, listar, buscar por ID, editar)
+- ✅ Controle de acesso por papel (usuário comum vs. administrador)
+- ✅ CRUD completo de exercícios (catálogo, restrito a administradores)
   - Cada exercício possui grupo muscular principal e lista de músculos sinergistas
+- ✅ Catálogo de técnicas de treino (Cluster-set, Myo-reps, Back-off), com descrição e exemplo prático
+- ✅ CRUD completo de fichas de treino (por usuário)
+- ✅ Vínculo de exercícios a uma ficha, com séries, repetições, carga, ordem e técnica opcional
+- ✅ Autorização por dono — cada usuário só acessa as próprias fichas
+- ✅ Arquitetura organizada em routers (usuários, exercícios, fichas)
 
 ## Funcionalidades planejadas
 
-- 🔜 Exclusão de exercícios (`DELETE`)
-- 🔜 CRUD completo de fichas de treino
-- 🔜 Vínculo de exercícios a uma ficha (com séries, repetições, carga e ordem)
-- 🔜 Autorização por dono — cada usuário só acessa as próprias fichas
-- 🔜 Catálogo de exercícios pré-populado
-- 🔜 Documentação interativa via Swagger (`/docs`)
+- 🔜 Histórico de treinos executados
+- 🔜 Sugestão de progressão de carga (sobrecarga progressiva), adaptável ao objetivo do usuário
+- 🔜 Front-end (web e/ou mobile)
+- 🔜 Automação com n8n (lembretes de treino)
+- 🔜 Suporte a treinos adaptados para condições específicas de saúde
 
 ## Modelo do banco de dados
 
-O projeto conta com 5 tabelas principais:
+O projeto conta com 6 tabelas principais:
 
 - `usuarios`
 - `exercicios`
 - `exercicio_sinergistas`
+- `tecnicas`
 - `fichas_treino`
-- `ficha_exercicios` (tabela associativa entre fichas e exercícios)
+- `ficha_exercicios` (tabela associativa entre fichas e exercícios, com técnica opcional)
 
 ## Segurança
 
 - Senhas nunca são armazenadas em texto puro
 - Chaves sensíveis (conexão com banco, chave de assinatura JWT) são gerenciadas via variáveis de ambiente, fora do controle de versão
 - Autenticação obrigatória em rotas sensíveis
+- Controle de acesso por papel, restringindo operações administrativas
