@@ -60,6 +60,7 @@ class FichaExercicio (Base):
     ficha = relationship("FichaTreino", back_populates="ficha_exercicios")
     exercicio = relationship("Exercicio", back_populates="ficha_exercicios")
     tecnica = relationship("Tecnica", back_populates="ficha_exercicios")
+    registros = relationship("RegistroTreino", back_populates="ficha_exercicio")
 
 
 class Tecnica(Base):
@@ -74,6 +75,14 @@ class Tecnica(Base):
 
 
 
+class RegistroTreino(Base):
+    __tablename__ = "registros_treino"
 
+    id = Column(Integer, primary_key=True, index=True)
+    ficha_exercicio_id = Column(Integer, ForeignKey("ficha_exercicios.id"), nullable=False)
+    data_execucao = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    series_realizadas = Column(Integer, nullable=False)
+    repeticoes_realizadas = Column(Integer, nullable=False)
+    carga_realizada = Column(Float, nullable=True)
 
-
+    ficha_exercicio = relationship("FichaExercicio", back_populates="registros")

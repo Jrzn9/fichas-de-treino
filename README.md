@@ -19,6 +19,7 @@ O projeto nasce da observação de que muitas pessoas treinam de forma ineficien
 - **JWT (python-jose)** — autenticação baseada em tokens
 - **Passlib (bcrypt)** — hash seguro de senhas
 - **python-dotenv** — gerenciamento de variáveis de ambiente
+- **Pytest** — testes automatizados
 
 ## Funcionalidades já implementadas
 
@@ -30,20 +31,26 @@ O projeto nasce da observação de que muitas pessoas treinam de forma ineficien
 - ✅ Catálogo de técnicas de treino (Cluster-set, Myo-reps, Back-off), com descrição e exemplo prático
 - ✅ CRUD completo de fichas de treino (por usuário)
 - ✅ Vínculo de exercícios a uma ficha, com séries, repetições, carga, ordem e técnica opcional
+- ✅ Histórico de execuções de treino (registro real de séries/repetições/carga por sessão)
 - ✅ Autorização por dono — cada usuário só acessa as próprias fichas
 - ✅ Arquitetura organizada em routers (usuários, exercícios, fichas)
+- ✅ Suíte de testes automatizados com pytest, cobrindo autenticação, autorização e o fluxo completo da API
 
 ## Funcionalidades planejadas
 
-- 🔜 Histórico de treinos executados
+- 🔜 Objetivo de treino do usuário (hipertrofia/força, emagrecimento, manutenção, resistência/saúde)
 - 🔜 Sugestão de progressão de carga (sobrecarga progressiva), adaptável ao objetivo do usuário
+- 🔜 Perfil físico do usuário
+- 🔜 Estatísticas de treino
+- 🔜 Favoritar exercícios
+- 🔜 Expansão do catálogo, incluindo exercícios voltados à saúde articular (ex: isometria)
 - 🔜 Front-end (web e/ou mobile)
-- 🔜 Automação com n8n (lembretes de treino)
+- 🔜 Automação com n8n (lembretes de treino via Telegram)
 - 🔜 Suporte a treinos adaptados para condições específicas de saúde
 
 ## Modelo do banco de dados
 
-O projeto conta com 6 tabelas principais:
+O projeto conta com 7 tabelas principais:
 
 - `usuarios`
 - `exercicios`
@@ -51,6 +58,7 @@ O projeto conta com 6 tabelas principais:
 - `tecnicas`
 - `fichas_treino`
 - `ficha_exercicios` (tabela associativa entre fichas e exercícios, com técnica opcional)
+- `registros_treino` (histórico de execuções reais de treino)
 
 ## Segurança
 

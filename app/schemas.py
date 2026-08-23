@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr
+from datetime import datetime
 
 class UsuarioCreate(BaseModel):
     nome: str
@@ -86,4 +87,23 @@ class FichaExercicioUpdate(BaseModel):
     repeticoes: int | None = None
     carga: float | None = None
     ordem: int | None = None
-    
+
+
+
+class RegistroTreinoCreate(BaseModel):
+    series_realizadas: int
+    repeticoes_realizadas: int
+    carga_realizada: float | None = None
+
+
+class RegistroTreinoResponse(BaseModel):
+    id: int
+    ficha_exercicio_id: int
+    data_execucao: datetime
+    series_realizadas: int
+    repeticoes_realizadas: int
+    carga_realizada: float | None
+
+    class Config:
+        from_attributes = True 
+

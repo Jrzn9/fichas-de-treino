@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import Usuario, FichaTreino, FichaExercicio, Exercicio, Tecnica
-from app.schemas import FichaTreinoCreate, FichaTreinoResponse, FichaTreinoUpdate, FichaExercicioCreate, FichaExercicioResponse, FichaExercicioUpdate
+from app.models import Usuario, FichaTreino, FichaExercicio, Exercicio, Tecnica, RegistroTreino
+from app.schemas import FichaTreinoCreate, FichaTreinoResponse, FichaTreinoUpdate, FichaExercicioCreate, FichaExercicioResponse, FichaExercicioUpdate, RegistroTreinoCreate, RegistroTreinoResponse
 from app.routers.usuarios import pegar_usuario_atual
 
 router = APIRouter()
@@ -255,6 +255,117 @@ def remover_exercicio_da_ficha(
 
     return {"detail": "Exercício removido da ficha com sucesso"}
 
-    
-    
-    
+
+@router.post("/fichas/{ficha_id}/exercicios/{ficha_exercicio_id}/registros")
+def registrar_execucao(
+    ficha_id: int,
+    ficha_exercicio_id: int,
+    dados: RegistroTreinoCreate,
+    db: Session = Depends(get_db),
+    usuario_atual: Usuario = Depends (pegar_usuario_atual)
+):
+    ficha = db.query(FichaTreino).filter(
+        FichaTreino.id == ficha_id,
+        FichaTreino.usuario_id == usuario_atual.id
+    ).first()
+
+    if ficha is None:
+        raise HTTPException(status_code=404, detail="Ficha não encontrada")
+
+    vinculo = db.query(FichaExercicio).filter(
+        FichaExercicio.id == ficha_exercicio_id,
+        FichaExercicio.ficha_id == ficha_id
+    ).first()
+
+    if vinculo is None:
+        raise HTTPException(status_code=404, detail="Exercício não encotrado nessa ficha")
+
+    novo_registro = RegistroTreino(
+        ficha_exercicio_id=ficha_exercicio_id,
+        series_realizadas=dados.series_realizadas,
+        repeticoes_realizadas=dados.repeticoes_realizadas,
+        carga_realizada=dados.carga_realizada
+    )
+
+    db.add(novo_registro)
+    db.commit()
+    db.refresh(novo_registro)
+
+    return {
+        "detail": "Execução registrada com sucesso",
+        "registro": RegistroTreinoResponse(
+            id=novo_registro.id,
+            ficha_exercicio_id=novo_registro.ficha_exercicio_id,
+            data_execucao=novo_registro.data_execucao,
+            series_realizadas=novo_registro.series_realizadas,
+            repeticoes_realizadas=novo_registro.repeticoes_realizadas,
+            carga_realizada=novo_registro.carga_realizada
+        )
+    }
+
+@router.get("/fichas/{ficha_id}/exercicios/{ficha_exercicio_id}/registros", response_model=list[RegistroTreinoResponse])
+def listar_registros(
+    ficha_id: int,
+    ficha_exercicio_id: int,
+    db: Session = Depends(get_db),
+    usuario_atual: Usuario = Depends(pegar_usuario_atual)
+):
+    ficha = db.query(FichaTreino).filter(
+        FichaTreino.id == ficha_id,
+        FichaTreino.usuario_id == usuario_atual.id
+    ).first()
+
+    if ficha is None:
+        raise HTTPException(status_code=404, detail="Ficha não encontrada")
+
+    vinculo = db.query(FichaExercicio).filter(
+        FichaExercicio.id == ficha_exercicio_id,
+        FichaExercicio.ficha_id == ficha_id
+    ).first()
+
+    if vinculo is None:
+        raise HTTPException(status_code=404, detail="Exercício não encontrado nessa ficha")
+
+    registros = db.query(RegistroTreino).filter(
+        RegistroTreino.ficha_exercicio_id == ficha_exercicio_id
+    ).all()
+
+    return registros
+
+@router.delete("/fichas/{ficha_id}/exercicios/{ficha_exercicio_id}/registros/{registro_id}")
+def deletar_registro(
+    ficha_id: int,
+    ficha_exercicio_id: int,
+    registro_id: int,
+    db: Session = Depends(get_db),
+    usuario_atual: Usuario = Depends(pegar_usuario_atual)
+):
+    ficha = db.query(FichaTreino).filter(
+        FichaTreino.id == ficha_id,
+        FichaTreino.usuario_id == usuario_atual.id
+    ).first()
+
+    if ficha is None:
+        raise HTTPException(status_code=404, detail="Ficha não encotnrada")
+
+    vinculo = db.query(FichaExercicio).filter(
+        FichaExercicio.id == ficha_exercicio_id,
+        FichaExercicio.ficha_id == ficha_id 
+    ).first
+
+    if vinculo is None:
+        raise HTTPException(status_code=404, detail="Exercício não encontrado nessa ficha")
+
+    registro = db.query(RegistroTreino).filter(
+        RegistroTreino.id == registro_id,
+        RegistroTreino.ficha_exercicio_id == ficha_exercicio_id
+    ).first()
+
+    if registro is None:
+        raise HTTPException(status_code=404, detail="Registro não encontrado")
+
+
+    db.delete(registro)
+    db.commit()
+
+    return {"detail": "Registro deletado com sucesso"}
