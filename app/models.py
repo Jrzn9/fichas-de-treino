@@ -86,3 +86,13 @@ class RegistroTreino(Base):
     carga_realizada = Column(Float, nullable=True)
 
     ficha_exercicio = relationship("FichaExercicio", back_populates="registros")
+
+
+class Amizade(Base):
+    __tablename__ = "amizades"
+
+    id = Column(Integer, primary_key=True, index=True)
+    solicitante_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
+    destinatario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
+    status = Column(String, nullable=False, default="pendente")
+    criado_em = Column(DateTime, default=lambda: datetime.now(timezone.utc))

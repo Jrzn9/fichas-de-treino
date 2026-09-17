@@ -11,6 +11,8 @@ class UsuarioResponse(BaseModel):
     id: int
     nome: str
     email: EmailStr
+    is_admin: bool
+    criado_em: datetime
 
     class Config:
         from_attributes = True
@@ -107,3 +109,12 @@ class RegistroTreinoResponse(BaseModel):
     class Config:
         from_attributes = True 
 
+class AmizadeResponse(BaseModel):
+    id: int
+    solicitante_id: int
+    destinatario_id: int
+    status: str
+    criado_em: datetime
+
+    class Config:
+        from_attributes = True
