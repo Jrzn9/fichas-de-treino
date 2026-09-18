@@ -40,6 +40,22 @@ def listar_fichas(
     return fichas
 
 
+@router.get("/fichas/compartilhadas-comigo", response_model=list[FichaTreinoResponse])
+def listar_fichas_compartilhadas(
+    db: Session = Depends(get_db),
+    usuario_atual: Usuario = Depends(pegar_usuario_atual)
+):
+    from app.models import CompartilhamentoFicha
+
+    compartilhamentos = db.query(CompartilhamentoFicha).filter(
+        CompartilhamentoFicha.compartilhado_com_id == usuario_atual.id
+    ).all()
+
+    fichas_ids = [c.ficha_id for c in compartilhamentos]
+
+    return db.query(FichaTreino).filter(FichaTreino.id.in_(fichas_ids)).all()
+
+
 @router.get("/fichas/{ficha_id}", response_model=FichaTreinoResponse)
 def buscar_ficha(
     ficha_id: int,
@@ -415,17 +431,3 @@ def compartilhar_ficha(
     return {"detail": "Ficha compartilhada com sucesso"}
 
 
-@router.get("/fichas/compartilhadas-comigo", response_model=list[FichaTreinoResponse])
-def listar_fichas_compartilhadas(
-    db: Session = Depends(get_db),
-    usuario_atual: Usuario = Depends(pegar_usuario_atual)
-):
-    from app.models import CompartilhamentoFicha
-
-    compartilhamentos = db.query(CompartilhamentoFicha).filter(
-        CompartilhamentoFicha.compartilhado_com_id == usuario_atual.id
-    ).all()
-
-    fichas_ids = [c.ficha_id for c in compartilhamentos]
-
-    return db.query(FichaTreino).filter(FichaTreino.id.in_(fichas_ids)).all()
