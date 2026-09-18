@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import Usuario, FichaTreino, FichaExercicio, Exercicio, Tecnica, RegistroTreino
-from app.schemas import FichaTreinoCreate, FichaTreinoResponse, FichaTreinoUpdate, FichaExercicioCreate, FichaExercicioResponse, FichaExercicioUpdate, RegistroTreinoCreate, RegistroTreinoResponse
+from app.schemas import FichaTreinoCreate, FichaTreinoResponse, FichaTreinoUpdate, FichaExercicioCreate, FichaExercicioResponse, FichaExercicioUpdate, RegistroTreinoCreate, RegistroTreinoResponse, MensagemResponse
 from app.routers.usuarios import pegar_usuario_atual
 
 router = APIRouter()
@@ -369,3 +369,63 @@ def deletar_registro(
     db.commit()
 
     return {"detail": "Registro deletado com sucesso"}
+
+@router.post("/fichas/{ficha_id}/compartilhar/{amigo_id}", response_model=MensagemResponse)
+def compartilhar_ficha(
+    ficha_id: int,
+    amigo_id: int,
+    db: Session = Depends(get_db),
+    usuario_atual: Usuario = Depends(pegar_usuario_atual)
+):
+    from app.models import Amizade, CompartilhamentoFicha
+
+    ficha = db.query(FichaTreino).filter(
+        FichaTreino.id == ficha_id,
+        FichaTreino.usuario_id == usuario_atual.id
+    ).first()
+
+    if ficha is None:
+        raise HTTPException(status_code=404, detail="Ficha não encontrada")
+
+    sao_amigos = db.query(Amizade).filter(
+        ((Amizade.solicitante_id == usuario_atual.id) & (Amizade.destinatario_id == amigo_id)) |
+        ((Amizade.solicitante_id == amigo_id) & (Amizade.destinatario_id == usuario_atual.id)),
+        Amizade.status == "aceito"
+    ).first()
+
+    if sao_amigos is None:
+        raise HTTPException(status_code=403, detail="Vocês não são amigos")
+
+    ja_compartilhado = db.query(CompartilhamentoFicha).filter(
+        CompartilhamentoFicha.ficha_id == ficha_id,
+        CompartilhamentoFicha.compartilhado_com_id == amigo_id
+    ).first()
+
+    if ja_compartilhado is not None:
+        raise HTTPException(status_code=400, detail="Ficha já compartilhada com esse amigo")
+
+    novo_compartilhamento = CompartilhamentoFicha(
+        ficha_id=ficha_id,
+        compartilhado_com_id=amigo_id
+    )
+
+    db.add(novo_compartilhamento)
+    db.commit()
+
+    return {"detail": "Ficha compartilhada com sucesso"}
+
+
+@router.get("/fichas/compartilhadas-comigo", response_model=list[FichaTreinoResponse])
+def listar_fichas_compartilhadas(
+    db: Session = Depends(get_db),
+    usuario_atual: Usuario = Depends(pegar_usuario_atual)
+):
+    from app.models import CompartilhamentoFicha
+
+    compartilhamentos = db.query(CompartilhamentoFicha).filter(
+        CompartilhamentoFicha.compartilhado_com_id == usuario_atual.id
+    ).all()
+
+    fichas_ids = [c.ficha_id for c in compartilhamentos]
+
+    return db.query(FichaTreino).filter(FichaTreino.id.in_(fichas_ids)).all()

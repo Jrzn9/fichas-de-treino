@@ -101,3 +101,20 @@ def login(credenciais: UsuarioLogin, db: Session = Depends(get_db)):
 @router.get("/me", response_model=UsuarioResponse)
 def ler_usuario_atual(usuario_atual: Usuario = Depends(pegar_usuario_atual)):
     return usuario_atual
+
+
+@router.get("/usuarios/buscar", response_model=list[UsuarioResponse])
+def buscar_usuarios(
+    nome: str | None = None,
+    email: str | None = None,
+    db: Session = Depends(get_db),
+    usuario_atual: Usuario = Depends(pegar_usuario_atual)
+):
+    query = db.query(Usuario)
+
+    if nome:
+        query = query.filter(Usuario.nome.ilike(f"%{nome}%"))
+    if email:
+        query = query.filter(Usuario.email.ilike(f"%{email}%"))
+
+    return query.limit(20).all()

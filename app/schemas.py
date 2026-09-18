@@ -118,3 +118,26 @@ class AmizadeResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class MensagemResponse(BaseModel):
+    detail: str
+
+
+class PedidoAmizadeResponse(BaseModel):
+    detail: str
+    pedido: AmizadeResponse
+
+
+class AmigoResumoResponse(BaseModel):
+    id: int
+    nome: str
+
+class CompartilhamentoResponse(BaseModel):
+    id: int
+    ficha_id: int
+    compartilhado_com_id: int
+    criado_em: datetime
+
+    class Config:
+        from_attributes = True

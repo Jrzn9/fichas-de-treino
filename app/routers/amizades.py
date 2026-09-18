@@ -3,13 +3,13 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import Usuario, Amizade
-from app.schemas import AmizadeResponse
+from app.schemas import AmizadeResponse, MensagemResponse, PedidoAmizadeResponse, AmigoResumoResponse
 from app.routers.usuarios import pegar_usuario_atual
 
 router = APIRouter()
 
 
-@router.post("/amigos/{usuario_id}")
+@router.post("/amigos/{usuario_id}", response_model=PedidoAmizadeResponse)
 def enviar_pedido_amizade(
     usuario_id: int,
     db: Session = Depends(get_db),
@@ -26,7 +26,6 @@ def enviar_pedido_amizade(
         ((Amizade.solicitante_id == usuario_atual.id) & (Amizade.destinatario_id == usuario_id)) |
         ((Amizade.solicitante_id == usuario_id) & (Amizade.destinatario_id == usuario_atual.id))
     ).first()
-    
 
     if pedido_existente is not None:
         raise HTTPException(status_code=400, detail="Já existe um pedido ou amizade entre vocês")
@@ -57,7 +56,7 @@ def listar_pedidos_pendentes(
     return pedidos
 
 
-@router.put("/amigos/{pedido_id}/aceitar")
+@router.put("/amigos/{pedido_id}/aceitar", response_model=MensagemResponse)
 def aceitar_pedido(
     pedido_id: int,
     db: Session = Depends(get_db),
@@ -67,7 +66,6 @@ def aceitar_pedido(
         Amizade.id == pedido_id,
         Amizade.destinatario_id == usuario_atual.id
     ).first()
-    
 
     if pedido is None:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
@@ -78,7 +76,7 @@ def aceitar_pedido(
     return {"detail": "Pedido de amizade aceito"}
 
 
-@router.put("/amigos/{pedido_id}/recusar")
+@router.put("/amigos/{pedido_id}/recusar", response_model=MensagemResponse)
 def recusar_pedido(
     pedido_id: int,
     db: Session = Depends(get_db),
@@ -98,7 +96,7 @@ def recusar_pedido(
     return {"detail": "Pedido de amizade recusado"}
 
 
-@router.get("/amigos")
+@router.get("/amigos", response_model=list[AmigoResumoResponse])
 def listar_amigos(
     db: Session = Depends(get_db),
     usuario_atual: Usuario = Depends(pegar_usuario_atual)
@@ -107,19 +105,18 @@ def listar_amigos(
         ((Amizade.solicitante_id == usuario_atual.id) | (Amizade.destinatario_id == usuario_atual.id)),
         Amizade.status == "aceito"
     ).all()
-    
 
     amigos_ids = [
         amizade.destinatario_id if amizade.solicitante_id == usuario_atual.id else amizade.solicitante_id
         for amizade in amizades
     ]
-    
 
     amigos = db.query(Usuario).filter(Usuario.id.in_(amigos_ids)).all()
 
     return [{"id": amigo.id, "nome": amigo.nome} for amigo in amigos]
 
-@router.delete("/amigos/{usuario_id}")
+
+@router.delete("/amigos/{usuario_id}", response_model=MensagemResponse)
 def desfazer_amizade(
     usuario_id: int,
     db: Session = Depends(get_db),
@@ -130,7 +127,6 @@ def desfazer_amizade(
         ((Amizade.solicitante_id == usuario_id) & (Amizade.destinatario_id == usuario_atual.id)),
         Amizade.status == "aceito"
     ).first()
-    # busca a amizade aceita entre os dois, em qualquer direção
 
     if amizade is None:
         raise HTTPException(status_code=404, detail="Amizade não encontrada")

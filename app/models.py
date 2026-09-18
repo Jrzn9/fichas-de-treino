@@ -96,3 +96,12 @@ class Amizade(Base):
     destinatario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
     status = Column(String, nullable=False, default="pendente")
     criado_em = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class CompartilhamentoFicha(Base):
+    __tablename__ = "compartilhamentos_ficha"
+
+    id = Column(Integer, primary_key=True, index=True)
+    ficha_id = Column(Integer, ForeignKey("ficha_treino.id"), nullable=False)
+    compartilhado_com_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
+    criado_em = Column(DateTime, default=lambda: datetime.now(timezone.utc))
