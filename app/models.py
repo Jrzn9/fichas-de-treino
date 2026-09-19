@@ -13,6 +13,8 @@ class Usuario (Base):
     senha_hash = Column(String, nullable=False)
     is_admin = Column(Boolean, default=False)
     criado_em = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    aceita_compartilhamento = Column(Boolean, default=True, nullable=False)
+    ultima_atividade = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     fichas_treino=relationship("FichaTreino", back_populates="usuario")
 
