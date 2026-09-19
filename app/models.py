@@ -107,5 +107,3 @@ class CompartilhamentoFicha(Base):
     ficha_id = Column(Integer, ForeignKey("ficha_treino.id"), nullable=False)
     compartilhado_com_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
     criado_em = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    aceita_compartilhamento = Column(Boolean, default=True, nullable=False)
-    ultima_atividade = Column(DateTime, default=lambda: datetime.now(timezone.utc))

@@ -29,6 +29,10 @@ def hash_senha(senha: str) -> str:
 
 def usuario_esta_online(ultima_atividade: datetime) -> bool:
     agora = datetime.now(timezone.utc)
+
+    if ultima_atividade.tzinfo is None:
+        ultima_atividade = ultima_atividade.replace(tzinfo=timezone.utc)
+
     return (agora - ultima_atividade) < timedelta(minutes=5)
 
 def montar_resposta_usuario(usuario: Usuario) -> UsuarioResponse:
