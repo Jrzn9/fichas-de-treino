@@ -13,6 +13,9 @@ class UsuarioResponse(BaseModel):
     email: EmailStr
     is_admin: bool
     criado_em: datetime
+    aceita_compartilhamento: bool
+    ultima_atividade: datetime
+    online: bool
 
     class Config:
         from_attributes = True

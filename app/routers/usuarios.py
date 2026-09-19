@@ -27,6 +27,23 @@ def hash_senha(senha: str) -> str:
     return pwd_context.hash(senha)
 
 
+def usuario_esta_online(ultima_atividade: datetime) -> bool:
+    agora = datetime.now(timezone.utc)
+    return (agora - ultima_atividade) < timedelta(minutes=5)
+
+def montar_resposta_usuario(usuario: Usuario) -> UsuarioResponse:
+    return UsuarioResponse(
+        id=usuario.id,
+        nome=usuario.nome,
+        email=usuario.email,
+        is_admin=usuario.is_admin,
+        criado_em=usuario.criado_em,
+        aceita_compartilhamento=usuario.aceita_compartilhamento,
+        ultima_atividade=usuario.ultima_atividade,
+        online=usuario_esta_online(usuario.ultima_atividade)
+    )
+
+
 def verificar_senha(senha: str, senha_hash: str) -> bool:
     return pwd_context.verify(senha, senha_hash)
 
@@ -37,7 +54,6 @@ def criar_token(dados: dict) -> str:
     dados_para_codificar.update({"exp": expira_em})
     token = jwt.encode(dados_para_codificar, SECRET_KEY, algorithm=ALGORITHM)
     return token
-
 
 def pegar_usuario_atual(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Usuario:
     excecao_credenciais = HTTPException(
@@ -57,8 +73,10 @@ def pegar_usuario_atual(token: str = Depends(oauth2_scheme), db: Session = Depen
     if usuario is None:
         raise excecao_credenciais
 
-    return usuario
+    usuario.ultima_atividade = datetime.now(timezone.utc)
+    db.commit()
 
+    return usuario
 
 def exigir_admin(usuario_atual: Usuario = Depends(pegar_usuario_atual)) -> Usuario:
     if not usuario_atual.is_admin:
@@ -83,7 +101,7 @@ def criar_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(novo_usuario)
 
-    return novo_usuario
+    return montar_resposta_usuario(novo_usuario)
 
 
 @router.post("/login")
@@ -100,7 +118,7 @@ def login(credenciais: UsuarioLogin, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=UsuarioResponse)
 def ler_usuario_atual(usuario_atual: Usuario = Depends(pegar_usuario_atual)):
-    return usuario_atual
+    return montar_resposta_usuario(usuario_atual)
 
 
 @router.get("/usuarios/buscar", response_model=list[UsuarioResponse])
@@ -118,3 +136,15 @@ def buscar_usuarios(
         query = query.filter(Usuario.email.ilike(f"%{email}%"))
 
     return query.limit(20).all()
+
+@router.put("/me/preferencias", response_model=UsuarioResponse)
+def atualizar_preferencias(
+    aceita_compartilhamento: bool,
+    db: Session = Depends(get_db),
+    usuario_atual: Usuario = Depends(pegar_usuario_atual)
+):
+    usuario_atual.aceita_compartilhamento = aceita_compartilhamento
+    db.commit()
+    db.refresh(usuario_atual)
+
+    return montar_resposta_usuario(usuario_atual)

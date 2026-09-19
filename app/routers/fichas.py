@@ -108,14 +108,26 @@ def deletar_ficha(
     db: Session = Depends(get_db),
     usuario_atual: Usuario = Depends(pegar_usuario_atual)
 ):
+    from app.models import RegistroTreino, CompartilhamentoFicha
 
     ficha = db.query(FichaTreino).filter(
-    FichaTreino.id == ficha_id,
-    FichaTreino.usuario_id == usuario_atual.id
+        FichaTreino.id == ficha_id,
+        FichaTreino.usuario_id == usuario_atual.id
     ).first()
 
     if ficha is None:
         raise HTTPException(status_code=404, detail="Ficha não encontrada")
+
+    vinculos_ids = [
+        v.id for v in db.query(FichaExercicio).filter(FichaExercicio.ficha_id == ficha_id).all()
+    ]
+
+    if vinculos_ids:
+        db.query(RegistroTreino).filter(RegistroTreino.ficha_exercicio_id.in_(vinculos_ids)).delete(synchronize_session=False)
+
+    db.query(FichaExercicio).filter(FichaExercicio.ficha_id == ficha_id).delete(synchronize_session=False)
+
+    db.query(CompartilhamentoFicha).filter(CompartilhamentoFicha.ficha_id == ficha_id).delete(synchronize_session=False)
 
     db.delete(ficha)
     db.commit()
