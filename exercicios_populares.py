@@ -4,6 +4,7 @@ from app.models import Exercicio, ExercicioSinergista
 db = SessionLocal()
 
 exercicios = [
+
     # =========================================================
     # PEITO
     # =========================================================
@@ -18,11 +19,20 @@ exercicios = [
     {"nome": "Paralelas (foco peito)", "grupo_muscular": "Peito", "sinergistas": ["Triceps", "Ombros"]},
     {"nome": "Flexao de Braco", "grupo_muscular": "Peito", "sinergistas": ["Ombros", "Triceps"]},
 
+    # Novos
     {"nome": "Supino Maquina", "grupo_muscular": "Peito", "sinergistas": ["Ombros", "Triceps"]},
     {"nome": "Supino Inclinado Maquina", "grupo_muscular": "Peito", "sinergistas": ["Ombros", "Triceps"]},
-    {"nome": "Chest Press", "grupo_muscular": "Peito", "sinergistas": ["Ombros", "Triceps"]},
     {"nome": "Crucifixo na Maquina", "grupo_muscular": "Peito", "sinergistas": ["Ombros"]},
     {"nome": "Crossover de Baixo para Cima", "grupo_muscular": "Peito", "sinergistas": ["Ombros"]},
+    {"nome": "Crossover de Cima para Baixo", "grupo_muscular": "Peito", "sinergistas": ["Ombros"]},
+    {"nome": "Crossover na Altura do Peito", "grupo_muscular": "Peito", "sinergistas": ["Ombros"]},
+    {"nome": "Crucifixo Inclinado com Halteres", "grupo_muscular": "Peito", "sinergistas": ["Ombros"]},
+    {"nome": "Crucifixo na Polia", "grupo_muscular": "Peito", "sinergistas": ["Ombros"]},
+    {"nome": "Crucifixo Unilateral na Polia", "grupo_muscular": "Peito", "sinergistas": ["Ombros"]},
+    {"nome": "Supino com Halteres (pegada neutra)", "grupo_muscular": "Peito", "sinergistas": ["Ombros", "Triceps"]},
+    {"nome": "Supino Inclinado com Halteres (pegada neutra)", "grupo_muscular": "Peito", "sinergistas": ["Ombros", "Triceps"]},
+    {"nome": "Flexao de Braco com Carga", "grupo_muscular": "Peito", "sinergistas": ["Ombros", "Triceps"]},
+
 
     # =========================================================
     # COSTAS
@@ -36,15 +46,28 @@ exercicios = [
     {"nome": "Levantamento Terra", "grupo_muscular": "Costas", "sinergistas": ["Gluteos", "Posterior de coxa", "Lombar"]},
     {"nome": "Encolhimento (shrug)", "grupo_muscular": "Costas", "sinergistas": ["Antebraco"]},
     {"nome": "Hiperextensao Lombar", "grupo_muscular": "Costas", "sinergistas": ["Gluteos"]},
-    {"nome": "T Bar Maquina", "grupo_muscular": "Costas", "sinergistas": ["Biceps", "Antebraço"]},
 
+    # Novos
     {"nome": "Remada Baixa Maquina", "grupo_muscular": "Costas", "sinergistas": ["Biceps"]},
     {"nome": "Remada Maquina com Apoio no Peito", "grupo_muscular": "Costas", "sinergistas": ["Biceps"]},
     {"nome": "Remada Articulada", "grupo_muscular": "Costas", "sinergistas": ["Biceps"]},
+    {"nome": "Remada Cavalinho", "grupo_muscular": "Costas", "sinergistas": ["Biceps", "Lombar"]},
+    {"nome": "Remada T-Bar", "grupo_muscular": "Costas", "sinergistas": ["Biceps", "Lombar"]},
+    {"nome": "Remada T-Bar com Apoio no Peito", "grupo_muscular": "Costas", "sinergistas": ["Biceps"]},
+    {"nome": "Remada Articulada Unilateral", "grupo_muscular": "Costas", "sinergistas": ["Biceps"]},
+    {"nome": "Remada Baixa Unilateral na Polia", "grupo_muscular": "Costas", "sinergistas": ["Biceps"]},
+    {"nome": "Remada Alta na Maquina", "grupo_muscular": "Costas", "sinergistas": ["Biceps", "Trapezio"]},
     {"nome": "Puxada Neutra", "grupo_muscular": "Costas", "sinergistas": ["Biceps"]},
     {"nome": "Puxada Unilateral", "grupo_muscular": "Costas", "sinergistas": ["Biceps"]},
+    {"nome": "Puxada Supinada", "grupo_muscular": "Costas", "sinergistas": ["Biceps"]},
+    {"nome": "Puxada Pronada", "grupo_muscular": "Costas", "sinergistas": ["Biceps"]},
+    {"nome": "Puxada Articulada", "grupo_muscular": "Costas", "sinergistas": ["Biceps"]},
+    {"nome": "Puxada na Maquina", "grupo_muscular": "Costas", "sinergistas": ["Biceps"]},
+    {"nome": "Pulldown Unilateral na Polia", "grupo_muscular": "Costas", "sinergistas": ["Biceps"]},
+    {"nome": "Pulldown com Bracos Estendidos", "grupo_muscular": "Costas", "sinergistas": []},
     {"nome": "Pullover na Maquina", "grupo_muscular": "Costas", "sinergistas": []},
     {"nome": "Pullover na Polia", "grupo_muscular": "Costas", "sinergistas": []},
+
 
     # =========================================================
     # QUADRICEPS
@@ -57,11 +80,19 @@ exercicios = [
     {"nome": "Agachamento Frontal", "grupo_muscular": "Quadriceps", "sinergistas": ["Gluteos"]},
     {"nome": "Agachamento Sumo", "grupo_muscular": "Quadriceps", "sinergistas": ["Gluteos"]},
 
+    # Novos
     {"nome": "Hack Squat", "grupo_muscular": "Quadriceps", "sinergistas": ["Gluteos", "Posterior de coxa"]},
     {"nome": "Agachamento no Smith", "grupo_muscular": "Quadriceps", "sinergistas": ["Gluteos", "Posterior de coxa"]},
+    {"nome": "Agachamento no Smith com Pes a Frente", "grupo_muscular": "Quadriceps", "sinergistas": ["Gluteos"]},
     {"nome": "Leg Press Horizontal", "grupo_muscular": "Quadriceps", "sinergistas": ["Gluteos"]},
+    {"nome": "Leg Press 90", "grupo_muscular": "Quadriceps", "sinergistas": ["Gluteos"]},
+    {"nome": "Leg Press Unilateral", "grupo_muscular": "Quadriceps", "sinergistas": ["Gluteos"]},
     {"nome": "Cadeira Extensora Unilateral", "grupo_muscular": "Quadriceps", "sinergistas": []},
     {"nome": "Sissy Squat", "grupo_muscular": "Quadriceps", "sinergistas": []},
+    {"nome": "Belt Squat", "grupo_muscular": "Quadriceps", "sinergistas": ["Gluteos"]},
+    {"nome": "Pendulum Squat", "grupo_muscular": "Quadriceps", "sinergistas": ["Gluteos"]},
+    {"nome": "V-Squat", "grupo_muscular": "Quadriceps", "sinergistas": ["Gluteos"]},
+
 
     # =========================================================
     # OMBROS
@@ -72,10 +103,21 @@ exercicios = [
     {"nome": "Crucifixo Invertido", "grupo_muscular": "Ombros", "sinergistas": ["Trapezio"]},
     {"nome": "Desenvolvimento com Halteres", "grupo_muscular": "Ombros", "sinergistas": ["Triceps"]},
 
+    # Novos
     {"nome": "Desenvolvimento na Maquina", "grupo_muscular": "Ombros", "sinergistas": ["Triceps"]},
+    {"nome": "Desenvolvimento Arnold", "grupo_muscular": "Ombros", "sinergistas": ["Triceps"]},
     {"nome": "Elevacao Lateral na Maquina", "grupo_muscular": "Ombros", "sinergistas": []},
     {"nome": "Elevacao Lateral na Polia", "grupo_muscular": "Ombros", "sinergistas": []},
+    {"nome": "Elevacao Lateral Unilateral na Polia", "grupo_muscular": "Ombros", "sinergistas": []},
+    {"nome": "Elevacao Lateral Inclinada", "grupo_muscular": "Ombros", "sinergistas": []},
+    {"nome": "Elevacao Lateral Sentado", "grupo_muscular": "Ombros", "sinergistas": []},
+    {"nome": "Elevacao Lateral com Halteres", "grupo_muscular": "Ombros", "sinergistas": []},
+    {"nome": "Crucifixo Inverso na Maquina", "grupo_muscular": "Ombros", "sinergistas": ["Trapezio"]},
+    {"nome": "Crucifixo Inverso na Polia", "grupo_muscular": "Ombros", "sinergistas": ["Trapezio"]},
     {"nome": "Face Pull", "grupo_muscular": "Ombros", "sinergistas": ["Trapezio"]},
+    {"nome": "Face Pull com Corda", "grupo_muscular": "Ombros", "sinergistas": ["Trapezio"]},
+    {"nome": "Remada Alta na Polia", "grupo_muscular": "Ombros", "sinergistas": ["Trapezio"]},
+
 
     # =========================================================
     # BICEPS
@@ -87,10 +129,24 @@ exercicios = [
     {"nome": "Rosca Inversa", "grupo_muscular": "Biceps", "sinergistas": ["Braquiorradial", "Antebraco"]},
     {"nome": "Rosca no Cabo (polia)", "grupo_muscular": "Biceps", "sinergistas": ["Antebraco"]},
 
+    # Novos
+    {"nome": "Rosca Inclinada com Halteres", "grupo_muscular": "Biceps", "sinergistas": ["Antebraco"]},
+    {"nome": "Rosca Direta (barra reta)", "grupo_muscular": "Biceps", "sinergistas": ["Antebraco"]},
+    {"nome": "Rosca Direta na Maquina", "grupo_muscular": "Biceps", "sinergistas": ["Antebraco"]},
+    {"nome": "Rosca Spider", "grupo_muscular": "Biceps", "sinergistas": ["Antebraco"]},
+    {"nome": "Rosca Concentrada com Halter", "grupo_muscular": "Biceps", "sinergistas": []},
+    {"nome": "Rosca no Banco Inclinado Unilateral", "grupo_muscular": "Biceps", "sinergistas": ["Antebraco"]},
+    {"nome": "Rosca no Cabo com Braco Atrás do Corpo", "grupo_muscular": "Biceps", "sinergistas": ["Antebraco"]},
+    {"nome": "Rosca Martelo na Polia com Corda", "grupo_muscular": "Biceps", "sinergistas": ["Braquial", "Antebraco"]},
+    {"nome": "Rosca Martelo com Halteres Sentado", "grupo_muscular": "Biceps", "sinergistas": ["Braquial", "Antebraco"]},
+    {"nome": "Rosca 45 Graus na Polia", "grupo_muscular": "Biceps", "sinergistas": ["Antebraco"]},
+    {"nome": "Rosca Scott Unilateral", "grupo_muscular": "Biceps", "sinergistas": []},
+    {"nome": "Rosca Scott na Polia", "grupo_muscular": "Biceps", "sinergistas": []},
     {"nome": "Rosca Scott na Maquina", "grupo_muscular": "Biceps", "sinergistas": []},
     {"nome": "Rosca Bayesian (polia)", "grupo_muscular": "Biceps", "sinergistas": ["Antebraco"]},
     {"nome": "Rosca Unilateral na Polia", "grupo_muscular": "Biceps", "sinergistas": ["Antebraco"]},
     {"nome": "Rosca Concentrada na Maquina", "grupo_muscular": "Biceps", "sinergistas": []},
+
 
     # =========================================================
     # TRICEPS
@@ -101,10 +157,24 @@ exercicios = [
     {"nome": "Supino Fechado", "grupo_muscular": "Triceps", "sinergistas": ["Peito", "Ombros"]},
     {"nome": "JM Press", "grupo_muscular": "Triceps", "sinergistas": ["Peito"]},
 
+    # Novos
+    {"nome": "Triceps Testa na Polia", "grupo_muscular": "Triceps", "sinergistas": []},
+    {"nome": "Triceps Testa Unilateral na Polia", "grupo_muscular": "Triceps", "sinergistas": []},
     {"nome": "Triceps Frances na Polia", "grupo_muscular": "Triceps", "sinergistas": []},
-    {"nome": "Triceps Unilateral na Polia", "grupo_muscular": "Triceps", "sinergistas": []},
-    {"nome": "Triceps acima da Cabeca na Polia", "grupo_muscular": "Triceps", "sinergistas": []},
+    {"nome": "Triceps Frances Unilateral na Polia", "grupo_muscular": "Triceps", "sinergistas": []},
+    {"nome": "Triceps Frances com Halteres", "grupo_muscular": "Triceps", "sinergistas": []},
+    {"nome": "Triceps Frances Unilateral com Halter", "grupo_muscular": "Triceps", "sinergistas": []},
+    {"nome": "Triceps Coice na Polia", "grupo_muscular": "Triceps", "sinergistas": []},
+    {"nome": "Triceps Coice com Halteres", "grupo_muscular": "Triceps", "sinergistas": []},
+    {"nome": "Triceps Corda", "grupo_muscular": "Triceps", "sinergistas": []},
+    {"nome": "Triceps Barra Reta na Polia", "grupo_muscular": "Triceps", "sinergistas": []},
+    {"nome": "Triceps Barra W na Polia", "grupo_muscular": "Triceps", "sinergistas": []},
+    {"nome": "Triceps Supinado na Polia", "grupo_muscular": "Triceps", "sinergistas": []},
+    {"nome": "Triceps Overhead com Corda", "grupo_muscular": "Triceps", "sinergistas": []},
+    {"nome": "Triceps Unilateral acima da Cabeca", "grupo_muscular": "Triceps", "sinergistas": []},
     {"nome": "Triceps na Maquina", "grupo_muscular": "Triceps", "sinergistas": []},
+    {"nome": "Triceps Pulley Unilateral", "grupo_muscular": "Triceps", "sinergistas": []},
+
 
     # =========================================================
     # ANTEBRACO
@@ -112,12 +182,18 @@ exercicios = [
     {"nome": "Rosca de Punho (flexao)", "grupo_muscular": "Antebraco", "sinergistas": []},
     {"nome": "Rosca de Punho Invertida (extensao)", "grupo_muscular": "Antebraco", "sinergistas": []},
     {"nome": "Farmers Walk", "grupo_muscular": "Antebraco", "sinergistas": ["Trapezio"]},
+    {"nome": "Flexao de Dedos com Barra", "grupo_muscular": "Antebraco", "sinergistas": []},
+    {"nome": "Extensao de Punho na Polia", "grupo_muscular": "Antebraco", "sinergistas": []},
+
 
     # =========================================================
     # BRAQUIAL
     # =========================================================
     {"nome": "Rosca Martelo (foco braquial)", "grupo_muscular": "Braquial", "sinergistas": ["Biceps", "Braquiorradial"]},
     {"nome": "Rosca Cross-Body", "grupo_muscular": "Braquial", "sinergistas": ["Biceps", "Braquiorradial"]},
+    {"nome": "Rosca Martelo na Polia", "grupo_muscular": "Braquial", "sinergistas": ["Biceps", "Braquiorradial"]},
+    {"nome": "Rosca Martelo Cross-Body", "grupo_muscular": "Braquial", "sinergistas": ["Biceps", "Braquiorradial"]},
+
 
     # =========================================================
     # POSTERIOR DE COXA
@@ -126,10 +202,19 @@ exercicios = [
     {"nome": "Mesa Flexora", "grupo_muscular": "Posterior de coxa", "sinergistas": []},
     {"nome": "Stiff", "grupo_muscular": "Posterior de coxa", "sinergistas": ["Gluteos", "Lombar"]},
 
+    # Novos
     {"nome": "Flexora Sentada", "grupo_muscular": "Posterior de coxa", "sinergistas": []},
     {"nome": "Flexora Deitada", "grupo_muscular": "Posterior de coxa", "sinergistas": []},
     {"nome": "Flexora Unilateral", "grupo_muscular": "Posterior de coxa", "sinergistas": []},
+    {"nome": "Flexora Sentada Unilateral", "grupo_muscular": "Posterior de coxa", "sinergistas": []},
+    {"nome": "Flexora Deitada Unilateral", "grupo_muscular": "Posterior de coxa", "sinergistas": []},
+    {"nome": "Flexora em Pe Unilateral", "grupo_muscular": "Posterior de coxa", "sinergistas": []},
+    {"nome": "Flexora na Maquina", "grupo_muscular": "Posterior de coxa", "sinergistas": []},
+    {"nome": "RDL Unilateral", "grupo_muscular": "Posterior de coxa", "sinergistas": ["Gluteos", "Lombar"]},
+    {"nome": "Stiff Unilateral", "grupo_muscular": "Posterior de coxa", "sinergistas": ["Gluteos", "Lombar"]},
     {"nome": "Good Morning", "grupo_muscular": "Posterior de coxa", "sinergistas": ["Gluteos", "Lombar"]},
+    {"nome": "Good Morning no Smith", "grupo_muscular": "Posterior de coxa", "sinergistas": ["Gluteos", "Lombar"]},
+
 
     # =========================================================
     # GLUTEOS
@@ -139,10 +224,20 @@ exercicios = [
     {"nome": "Abducao de Quadril (maquina)", "grupo_muscular": "Gluteos", "sinergistas": []},
     {"nome": "Agachamento Bulgaro (foco gluteo)", "grupo_muscular": "Gluteos", "sinergistas": ["Quadriceps", "Posterior de coxa"]},
 
+    # Novos
+    {"nome": "Hip Thrust na Maquina", "grupo_muscular": "Gluteos", "sinergistas": ["Posterior de coxa"]},
+    {"nome": "Hip Thrust no Smith", "grupo_muscular": "Gluteos", "sinergistas": ["Posterior de coxa"]},
     {"nome": "Gluteo na Maquina", "grupo_muscular": "Gluteos", "sinergistas": ["Posterior de coxa"]},
     {"nome": "Gluteo na Polia", "grupo_muscular": "Gluteos", "sinergistas": ["Posterior de coxa"]},
+    {"nome": "Gluteo na Polia Unilateral", "grupo_muscular": "Gluteos", "sinergistas": ["Posterior de coxa"]},
+    {"nome": "Gluteo Maquina Unilateral", "grupo_muscular": "Gluteos", "sinergistas": ["Posterior de coxa"]},
     {"nome": "Coice na Maquina", "grupo_muscular": "Gluteos", "sinergistas": ["Posterior de coxa"]},
+    {"nome": "Abducao na Maquina Unilateral", "grupo_muscular": "Gluteos", "sinergistas": []},
+    {"nome": "Abducao na Polia", "grupo_muscular": "Gluteos", "sinergistas": []},
+    {"nome": "Extensao de Quadril no Cabo", "grupo_muscular": "Gluteos", "sinergistas": ["Posterior de coxa"]},
     {"nome": "Passada no Smith", "grupo_muscular": "Gluteos", "sinergistas": ["Quadriceps", "Posterior de coxa"]},
+    {"nome": "Step-Up com Halteres", "grupo_muscular": "Gluteos", "sinergistas": ["Quadriceps", "Posterior de coxa"]},
+
 
     # =========================================================
     # PANTURRILHAS
@@ -151,9 +246,17 @@ exercicios = [
     {"nome": "Panturrilha Sentado", "grupo_muscular": "Panturrilhas", "sinergistas": []},
     {"nome": "Panturrilha no Leg Press", "grupo_muscular": "Panturrilhas", "sinergistas": []},
 
+    # Novos
     {"nome": "Panturrilha Sentado na Maquina", "grupo_muscular": "Panturrilhas", "sinergistas": []},
     {"nome": "Panturrilha em Pe na Maquina", "grupo_muscular": "Panturrilhas", "sinergistas": []},
     {"nome": "Panturrilha Unilateral", "grupo_muscular": "Panturrilhas", "sinergistas": []},
+    {"nome": "Panturrilha no Smith", "grupo_muscular": "Panturrilhas", "sinergistas": []},
+    {"nome": "Panturrilha no Hack", "grupo_muscular": "Panturrilhas", "sinergistas": []},
+    {"nome": "Panturrilha Unilateral em Pe", "grupo_muscular": "Panturrilhas", "sinergistas": []},
+    {"nome": "Panturrilha Unilateral Sentado", "grupo_muscular": "Panturrilhas", "sinergistas": []},
+    {"nome": "Panturrilha no Leg Press Unilateral", "grupo_muscular": "Panturrilhas", "sinergistas": []},
+    {"nome": "Panturrilha Donkey", "grupo_muscular": "Panturrilhas", "sinergistas": []},
+
 
     # =========================================================
     # ABDOMEN
@@ -164,9 +267,16 @@ exercicios = [
     {"nome": "Roda Abdominal (ab wheel)", "grupo_muscular": "Abdomen", "sinergistas": ["Ombros"]},
     {"nome": "Abdominal na Polia (cable crunch, ajoelhado)", "grupo_muscular": "Abdomen", "sinergistas": []},
 
+    # Novos
     {"nome": "Abdominal na Maquina", "grupo_muscular": "Abdomen", "sinergistas": []},
     {"nome": "Abdominal na Polia em Pe", "grupo_muscular": "Abdomen", "sinergistas": []},
+    {"nome": "Abdominal na Polia Unilateral", "grupo_muscular": "Abdomen", "sinergistas": []},
     {"nome": "Abdominal Reverse Crunch", "grupo_muscular": "Abdomen", "sinergistas": ["Flexores de quadril"]},
+    {"nome": "Crunch na Maquina", "grupo_muscular": "Abdomen", "sinergistas": []},
+    {"nome": "Crunch Reverso no Banco", "grupo_muscular": "Abdomen", "sinergistas": ["Flexores de quadril"]},
+    {"nome": "Elevacao de Joelhos na Paralela", "grupo_muscular": "Abdomen", "sinergistas": ["Flexores de quadril"]},
+    {"nome": "Elevacao de Pernas na Barra Fixa", "grupo_muscular": "Abdomen", "sinergistas": ["Flexores de quadril"]},
+    {"nome": "Pallof Press", "grupo_muscular": "Abdomen", "sinergistas": []},
 ]
 
 
@@ -179,7 +289,7 @@ ignorados = 0
 
 for dados_exercicio in exercicios:
 
-    # Verifica se o exercício já existe pelo nome
+    # Verifica se já existe um exercício com esse nome
     exercicio_existente = (
         db.query(Exercicio)
         .filter(Exercicio.nome == dados_exercicio["nome"])
@@ -198,6 +308,8 @@ for dados_exercicio in exercicios:
     )
 
     db.add(novo_exercicio)
+
+    # flush gera o ID sem precisar fazer commit
     db.flush()
 
     # Adiciona os sinergistas
@@ -224,15 +336,18 @@ for dados_exercicio in exercicios:
     print(f"[CADASTRADO] {dados_exercicio['nome']}")
 
 
-# Salva tudo de uma vez
+# =========================================================
+# SALVA TUDO
+# =========================================================
+
 db.commit()
 
 print("\n========================================")
-print("CADASTRO FINALIZADO")
+print("       CADASTRO FINALIZADO")
 print("========================================")
 print(f"Novos exercícios cadastrados: {cadastrados}")
-print(f"Exercícios já existentes: {ignorados}")
-print(f"Total na lista: {len(exercicios)}")
+print(f"Exercícios já existentes:      {ignorados}")
+print(f"Total de exercícios na lista:  {len(exercicios)}")
 print("========================================")
 
 db.close()
