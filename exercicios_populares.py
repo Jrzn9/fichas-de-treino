@@ -36,6 +36,7 @@ exercicios = [
     {"nome": "Levantamento Terra", "grupo_muscular": "Costas", "sinergistas": ["Gluteos", "Posterior de coxa", "Lombar"]},
     {"nome": "Encolhimento (shrug)", "grupo_muscular": "Costas", "sinergistas": ["Antebraco"]},
     {"nome": "Hiperextensao Lombar", "grupo_muscular": "Costas", "sinergistas": ["Gluteos"]},
+    {"nome": "T Bar Maquina", "grupo_muscular": "Costas", "sinergistas": ["Biceps", "Antebraço"]},
 
     {"nome": "Remada Baixa Maquina", "grupo_muscular": "Costas", "sinergistas": ["Biceps"]},
     {"nome": "Remada Maquina com Apoio no Peito", "grupo_muscular": "Costas", "sinergistas": ["Biceps"]},
