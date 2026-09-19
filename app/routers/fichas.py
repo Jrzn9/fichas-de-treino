@@ -180,13 +180,22 @@ def listar_exercicios_de_ficha(
     db: Session = Depends(get_db),
     usuario_atual: Usuario = Depends(pegar_usuario_atual)
 ):
-    ficha = db.query(FichaTreino).filter(
-        FichaTreino.id == ficha_id,
-        FichaTreino.usuario_id == usuario_atual.id      
-    ).first()
+    from app.models import CompartilhamentoFicha
+
+    ficha = db.query(FichaTreino).filter(FichaTreino.id == ficha_id).first()
 
     if ficha is None:
         raise HTTPException(status_code=404, detail="Ficha não encontrada")
+
+    e_dono = ficha.usuario_id == usuario_atual.id
+
+    foi_compartilhada = db.query(CompartilhamentoFicha).filter(
+        CompartilhamentoFicha.ficha_id == ficha_id,
+        CompartilhamentoFicha.compartilhado_com_id == usuario_atual.id
+    ).first() is not None
+
+    if not e_dono and not foi_compartilhada:
+        raise HTTPException(status_code=403, detail="Você não tem acesso a essa ficha")
 
     exercicios_da_ficha = db.query(FichaExercicio).filter(FichaExercicio.ficha_id == ficha_id).all()
 
