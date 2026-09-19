@@ -144,3 +144,20 @@ class CompartilhamentoResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class FichaPendenteResponse(BaseModel):
+    compartilhamento_id: int
+    ficha_id: int
+    nome_ficha: str
+    quantidade_exercicios: int
+    compartilhado_por: str
+    criado_em: datetime
+
+
+class FichaCompartilhadaResponse(BaseModel):
+    compartilhamento_id: int
+    ficha_id: int
+    nome_ficha: str
+    quantidade_exercicios: int
+    compartilhado_por: str

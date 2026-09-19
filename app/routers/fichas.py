@@ -3,7 +3,12 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import Usuario, FichaTreino, FichaExercicio, Exercicio, Tecnica, RegistroTreino
-from app.schemas import FichaTreinoCreate, FichaTreinoResponse, FichaTreinoUpdate, FichaExercicioCreate, FichaExercicioResponse, FichaExercicioUpdate, RegistroTreinoCreate, RegistroTreinoResponse, MensagemResponse
+from app.schemas import (
+    FichaTreinoCreate, FichaTreinoResponse, FichaTreinoUpdate,
+    FichaExercicioCreate, FichaExercicioResponse, FichaExercicioUpdate,
+    RegistroTreinoCreate, RegistroTreinoResponse, MensagemResponse,
+    FichaPendenteResponse, FichaCompartilhadaResponse
+)
 from app.routers.usuarios import pegar_usuario_atual
 
 router = APIRouter()
@@ -29,32 +34,145 @@ def criar_ficha(
         "ficha": FichaTreinoResponse(id=nova_ficha.id, nome=nova_ficha.nome)
     }
 
+
 @router.get("/fichas", response_model=list[FichaTreinoResponse])
 def listar_fichas(
     db: Session = Depends(get_db),
     usuario_atual: Usuario = Depends(pegar_usuario_atual)
 ):
-
     fichas = db.query(FichaTreino).filter(FichaTreino.usuario_id == usuario_atual.id).all()
 
     return fichas
 
 
-@router.get("/fichas/compartilhadas-comigo", response_model=list[FichaTreinoResponse])
+# ---- rotas de compartilhamento com caminho fixo, sempre antes de /fichas/{ficha_id} ----
+
+@router.get("/fichas/compartilhadas-pendentes", response_model=list[FichaPendenteResponse])
+def listar_compartilhamentos_pendentes(
+    db: Session = Depends(get_db),
+    usuario_atual: Usuario = Depends(pegar_usuario_atual)
+):
+    from app.models import CompartilhamentoFicha
+
+    pendentes = db.query(CompartilhamentoFicha).filter(
+        CompartilhamentoFicha.compartilhado_com_id == usuario_atual.id,
+        CompartilhamentoFicha.status == "pendente"
+    ).all()
+
+    resultado = []
+    for c in pendentes:
+        ficha = db.query(FichaTreino).filter(FichaTreino.id == c.ficha_id).first()
+        dono = db.query(Usuario).filter(Usuario.id == ficha.usuario_id).first()
+        qtd = db.query(FichaExercicio).filter(FichaExercicio.ficha_id == ficha.id).count()
+
+        resultado.append(FichaPendenteResponse(
+            compartilhamento_id=c.id,
+            ficha_id=ficha.id,
+            nome_ficha=ficha.nome,
+            quantidade_exercicios=qtd,
+            compartilhado_por=dono.nome,
+            criado_em=c.criado_em
+        ))
+
+    return resultado
+
+
+@router.get("/fichas/compartilhadas-comigo", response_model=list[FichaCompartilhadaResponse])
 def listar_fichas_compartilhadas(
     db: Session = Depends(get_db),
     usuario_atual: Usuario = Depends(pegar_usuario_atual)
 ):
     from app.models import CompartilhamentoFicha
 
-    compartilhamentos = db.query(CompartilhamentoFicha).filter(
-        CompartilhamentoFicha.compartilhado_com_id == usuario_atual.id
+    aceitos = db.query(CompartilhamentoFicha).filter(
+        CompartilhamentoFicha.compartilhado_com_id == usuario_atual.id,
+        CompartilhamentoFicha.status == "aceito"
     ).all()
 
-    fichas_ids = [c.ficha_id for c in compartilhamentos]
+    resultado = []
+    for c in aceitos:
+        ficha = db.query(FichaTreino).filter(FichaTreino.id == c.ficha_id).first()
+        dono = db.query(Usuario).filter(Usuario.id == ficha.usuario_id).first()
+        qtd = db.query(FichaExercicio).filter(FichaExercicio.ficha_id == ficha.id).count()
 
-    return db.query(FichaTreino).filter(FichaTreino.id.in_(fichas_ids)).all()
+        resultado.append(FichaCompartilhadaResponse(
+            compartilhamento_id=c.id,
+            ficha_id=ficha.id,
+            nome_ficha=ficha.nome,
+            quantidade_exercicios=qtd,
+            compartilhado_por=dono.nome
+        ))
 
+    return resultado
+
+
+@router.delete("/fichas/compartilhadas-comigo/{compartilhamento_id}", response_model=MensagemResponse)
+def remover_ficha_compartilhada(
+    compartilhamento_id: int,
+    db: Session = Depends(get_db),
+    usuario_atual: Usuario = Depends(pegar_usuario_atual)
+):
+    from app.models import CompartilhamentoFicha
+
+    c = db.query(CompartilhamentoFicha).filter(
+        CompartilhamentoFicha.id == compartilhamento_id,
+        CompartilhamentoFicha.compartilhado_com_id == usuario_atual.id
+    ).first()
+
+    if c is None:
+        raise HTTPException(status_code=404, detail="Compartilhamento não encontrado")
+
+    db.delete(c)
+    db.commit()
+
+    return {"detail": "Removido da sua lista"}
+
+
+@router.put("/fichas/compartilhadas/{compartilhamento_id}/aceitar", response_model=MensagemResponse)
+def aceitar_compartilhamento(
+    compartilhamento_id: int,
+    db: Session = Depends(get_db),
+    usuario_atual: Usuario = Depends(pegar_usuario_atual)
+):
+    from app.models import CompartilhamentoFicha
+
+    c = db.query(CompartilhamentoFicha).filter(
+        CompartilhamentoFicha.id == compartilhamento_id,
+        CompartilhamentoFicha.compartilhado_com_id == usuario_atual.id
+    ).first()
+
+    if c is None:
+        raise HTTPException(status_code=404, detail="Compartilhamento não encontrado")
+
+    c.status = "aceito"
+    db.commit()
+
+    return {"detail": "Compartilhamento aceito"}
+
+
+@router.put("/fichas/compartilhadas/{compartilhamento_id}/recusar", response_model=MensagemResponse)
+def recusar_compartilhamento(
+    compartilhamento_id: int,
+    db: Session = Depends(get_db),
+    usuario_atual: Usuario = Depends(pegar_usuario_atual)
+):
+    from app.models import CompartilhamentoFicha
+
+    c = db.query(CompartilhamentoFicha).filter(
+        CompartilhamentoFicha.id == compartilhamento_id,
+        CompartilhamentoFicha.compartilhado_com_id == usuario_atual.id
+    ).first()
+
+    if c is None:
+        raise HTTPException(status_code=404, detail="Compartilhamento não encontrado")
+
+    c.status = "recusado"
+    db.commit()
+
+    return {"detail": "Compartilhamento recusado"}
+
+
+# ---- rotas com {ficha_id} vêm depois das rotas de caminho fixo acima ----
 
 @router.get("/fichas/{ficha_id}", response_model=FichaTreinoResponse)
 def buscar_ficha(
@@ -62,7 +180,6 @@ def buscar_ficha(
     db: Session = Depends(get_db),
     usuario_atual: Usuario = Depends(pegar_usuario_atual)
 ):
-
     ficha = db.query(FichaTreino).filter(
         FichaTreino.id == ficha_id,
         FichaTreino.usuario_id == usuario_atual.id
@@ -81,7 +198,6 @@ def editar_ficha(
     db: Session = Depends(get_db),
     usuario_atual: Usuario = Depends(pegar_usuario_atual)
 ):
-
     ficha = db.query(FichaTreino).filter(
         FichaTreino.id == ficha_id,
         FichaTreino.usuario_id == usuario_atual.id
@@ -134,12 +250,13 @@ def deletar_ficha(
 
     return {"detail": "Ficha deletada com sucesso"}
 
+
 @router.post("/fichas/{ficha_id}/exercicios")
 def adicionar_exercicio_na_ficha(
     ficha_id: int,
     dados: FichaExercicioCreate,
-    db: Session = Depends (get_db),
-    usuario_atual: Usuario = Depends (pegar_usuario_atual)
+    db: Session = Depends(get_db),
+    usuario_atual: Usuario = Depends(pegar_usuario_atual)
 ):
     ficha = db.query(FichaTreino).filter(
         FichaTreino.id == ficha_id,
@@ -154,7 +271,7 @@ def adicionar_exercicio_na_ficha(
         raise HTTPException(status_code=404, detail="Exercício não encontrado no catálogo")
 
     if dados.tecnica_id is not None:
-        tecnica =db.query(Tecnica).filter(Tecnica.id == dados.tecnica_id).first()
+        tecnica = db.query(Tecnica).filter(Tecnica.id == dados.tecnica_id).first()
         if tecnica is None:
             raise HTTPException(status_code=404, detail="Técnica não encontrada")
 
@@ -184,8 +301,8 @@ def adicionar_exercicio_na_ficha(
             ordem=novo_vinculo.ordem
         )
     }
-        
-            
+
+
 @router.get("/fichas/{ficha_id}/exercicios", response_model=list[FichaExercicioResponse])
 def listar_exercicios_de_ficha(
     ficha_id: int,
@@ -203,7 +320,8 @@ def listar_exercicios_de_ficha(
 
     foi_compartilhada = db.query(CompartilhamentoFicha).filter(
         CompartilhamentoFicha.ficha_id == ficha_id,
-        CompartilhamentoFicha.compartilhado_com_id == usuario_atual.id
+        CompartilhamentoFicha.compartilhado_com_id == usuario_atual.id,
+        CompartilhamentoFicha.status == "aceito"
     ).first() is not None
 
     if not e_dono and not foi_compartilhada:
@@ -212,6 +330,7 @@ def listar_exercicios_de_ficha(
     exercicios_da_ficha = db.query(FichaExercicio).filter(FichaExercicio.ficha_id == ficha_id).all()
 
     return exercicios_da_ficha
+
 
 @router.put("/fichas/{ficha_id}/exercicios/{ficha_exercicio_id}")
 def editar_exercicio_da_ficha(
@@ -264,6 +383,7 @@ def editar_exercicio_da_ficha(
         )
     }
 
+
 @router.delete("/fichas/{ficha_id}/exercicios/{ficha_exercicio_id}")
 def remover_exercicio_da_ficha(
     ficha_id: int,
@@ -299,7 +419,7 @@ def registrar_execucao(
     ficha_exercicio_id: int,
     dados: RegistroTreinoCreate,
     db: Session = Depends(get_db),
-    usuario_atual: Usuario = Depends (pegar_usuario_atual)
+    usuario_atual: Usuario = Depends(pegar_usuario_atual)
 ):
     ficha = db.query(FichaTreino).filter(
         FichaTreino.id == ficha_id,
@@ -340,6 +460,7 @@ def registrar_execucao(
         )
     }
 
+
 @router.get("/fichas/{ficha_id}/exercicios/{ficha_exercicio_id}/registros", response_model=list[RegistroTreinoResponse])
 def listar_registros(
     ficha_id: int,
@@ -369,6 +490,7 @@ def listar_registros(
 
     return registros
 
+
 @router.delete("/fichas/{ficha_id}/exercicios/{ficha_exercicio_id}/registros/{registro_id}")
 def deletar_registro(
     ficha_id: int,
@@ -383,12 +505,12 @@ def deletar_registro(
     ).first()
 
     if ficha is None:
-        raise HTTPException(status_code=404, detail="Ficha não encotnrada")
+        raise HTTPException(status_code=404, detail="Ficha não encontrada")
 
     vinculo = db.query(FichaExercicio).filter(
         FichaExercicio.id == ficha_exercicio_id,
-        FichaExercicio.ficha_id == ficha_id 
-    ).first
+        FichaExercicio.ficha_id == ficha_id
+    ).first()
 
     if vinculo is None:
         raise HTTPException(status_code=404, detail="Exercício não encontrado nessa ficha")
@@ -401,11 +523,11 @@ def deletar_registro(
     if registro is None:
         raise HTTPException(status_code=404, detail="Registro não encontrado")
 
-
     db.delete(registro)
     db.commit()
 
     return {"detail": "Registro deletado com sucesso"}
+
 
 @router.post("/fichas/{ficha_id}/compartilhar/{amigo_id}", response_model=MensagemResponse)
 def compartilhar_ficha(
@@ -433,22 +555,27 @@ def compartilhar_ficha(
     if sao_amigos is None:
         raise HTTPException(status_code=403, detail="Vocês não são amigos")
 
-    ja_compartilhado = db.query(CompartilhamentoFicha).filter(
+    destinatario = db.query(Usuario).filter(Usuario.id == amigo_id).first()
+    if not destinatario.aceita_compartilhamento:
+        raise HTTPException(status_code=403, detail="Esse usuário não está aceitando compartilhamentos no momento")
+
+    ja_existe = db.query(CompartilhamentoFicha).filter(
         CompartilhamentoFicha.ficha_id == ficha_id,
         CompartilhamentoFicha.compartilhado_com_id == amigo_id
     ).first()
 
-    if ja_compartilhado is not None:
-        raise HTTPException(status_code=400, detail="Ficha já compartilhada com esse amigo")
+    if ja_existe is not None:
+        raise HTTPException(status_code=400, detail="Ficha já compartilhada ou pendente com esse amigo")
 
     novo_compartilhamento = CompartilhamentoFicha(
         ficha_id=ficha_id,
-        compartilhado_com_id=amigo_id
+        compartilhado_com_id=amigo_id,
+        status="pendente"
     )
 
     db.add(novo_compartilhamento)
     db.commit()
 
-    return {"detail": "Ficha compartilhada com sucesso"}
+    return {"detail": "Ficha enviada, aguardando aceite"}
 
 
